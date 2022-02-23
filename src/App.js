@@ -1,11 +1,8 @@
 import React, { useState } from "react";
-//import button from 'react-bootstrap/button';
 
-// let typeA_capacity = 5;
-// let typeB_capacity = 5;
-// let typeC_capacity = 5;
-// let typeD_capacity = 5;
+
 function App() {
+  const socket = new WebSocket('ws://localhost:8080');
 
   const [disable, setDisable] = React.useState(true);
   let counter = 0;
@@ -31,16 +28,11 @@ function App() {
   };
   let dBox3_Arr = [];
 
-  var dBox4 = {
-    name: "Box 4",
-    capacity: boxCapacity
-  };
-  let dBox4_Arr = [];
 
 
-  const destinationBoxes = [dBox1, dBox2, dBox3, dBox4];
+  const destinationBoxes = [dBox1, dBox2, dBox3];
 
-  function addPackage() {
+  function baddPackage() {
     if (counter == 20) {
       alert('All destination boxes are full!');
     }
@@ -90,23 +82,71 @@ function App() {
     // Ask C++ side for input conveyor status
   }
 
-  function sendPackage() {
+
+  function checkAvail() {
+    socket.send("0x01");
+    socket.addEventListener("message", data => {
+      let status = data.data;
+      if (status.contains("Available")) {
+        alert("Input conveyor available");
+        return true;
+      }
+
+      else {
+        alert("Input conveyor is busy...");
+      }
+    });
+    return false;
+  }
+
+  function checkSupport(pType) {
+    socket.send("0x03");
+    socket.addEventListener("message", data => {
+      let types = data.data;
+      if (types.includes(pType)) {
+        alert("Package type supported");
+        return true;
+      }
+
+      else {
+        alert("Package type NOT supported");
+      }
+    });
+    return false;
+  }
+
+
+
+  function addPackage() {
+
     let packageName = window.prompt('Enter your package name:');
     let packageType = window.prompt('Enter your package type:');
     let random = Math.floor(Math.random() * destinationBoxes.length);
-    if (packageName != null && packageType != null && packageName != '' && packageType != '') {
-      alert('Sorting into ' + destinationBoxes[random].name + ', current capacity: ' + --destinationBoxes[random].capacity);
+    // if (packageName != null && packageType != null && packageName != '' && packageType != '') {
+    //alert('Sorting into ' + destinationBoxes[random].name + ', current capacity: ' + --destinationBoxes[random].capacity);
+    //  }
 
+    // Check if package type is supported by boxes
+
+    if (checkSupport(packageType)) {
+ /* FXN NOT MOVING PAST THIS POINT  
+*
+*
+*
+*
+*/
+      alert("AHH SUPPORT");
+      if (checkAvail()) {
+        socket.send(
+          JSON.stringify({
+            name: packageName,
+            type: packageType,
+            destinationBox: destinationBoxes[random]
+          }));
+
+        alert("Package added to system");
+      }
     }
-    const socket = new WebSocket('ws://localhost:8080');
-    socket.addEventListener('open', () => {
-      socket.send(
-        JSON.stringify({
-          name: packageName,
-          type: packageType,
-          destinationBox: destinationBoxes[random]
-        }));
-    });
 
     var newPackage = {
       name: packageName,
@@ -117,81 +157,23 @@ function App() {
     counter++;
     packageArr.push(newPackage);
 
-    socket.onclose = function (event) {
-      if (event.wasClean) {
-        alert('[close] Connection closed cleanly');
-      } else {
-        // e.g. server process killed or network down
-        // event.code is usually 1006 in this case
-        alert('[close] Connection died');
-      }
-    };
-
-  }
-  function getPackageOne() {
-
-    let contents = "";
-
-    packageArr.forEach(function (elem) {
-      if (elem.destinationBox.name == "Box 1") {
-        contents += elem.name + ", " + elem.type + "\n";
-      }
-    });
-    alert(contents);
-    return contents;
-
-  }
-
-  function getPackageTwo() {
-    let contents = "";
-
-    dBox2_Arr.forEach(function (elem) {
-      contents += elem.name + ", " + elem.type + "\n";
-    });
-    alert(contents);
   }
 
 
-  function getPackageThree() {
-    let contents = "";
-
-    dBox3_Arr.forEach(function (elem) {
-      contents += elem.name + ", " + elem.type + "\n";
-    });
-    alert(contents);
+  function retrieve(boxName) {
+    let remNum = window.prompt("How many packages would you like to remove?");
+    for (let i = 0; i < remNum; i++) {
+      alert(packageArr.pop());
+    }
   }
-
-
-  function getPackageFour() {
-    let contents = "";
-
-    dBox4_Arr.forEach(function (elem) {
-      contents += elem.name + ", " + elem.type + "\n";
-    });
-    alert(contents);
-  }
-
-  function getPackages(boxName) {
-    packageArr.forEach(function (elem) {
-      if (elem.destinationBox.name == boxName) {
-        alert(elem.name)
-      }
-    });
-  }
-
 
   function boxStats() {
-    let boxes = "";
-    destinationBoxes.forEach(function (elem) {
-      boxes += elem.name + ", Capacity: " + elem.capacity + "\n";
+
+    socket.send("0x02");
+    socket.addEventListener("message", data => {
+      //  alert('Server sent ' + data.data);
     });
 
-    let packz = "";
-    packageArr.forEach(function (elem) {
-      packz += elem.name + ", Type: " + elem.type + "\n";
-    });
-    alert(boxes);
-    alert(packz);
   }
 
 
@@ -208,13 +190,29 @@ function App() {
     map['8'] = [5, 7, 9];
     map['9'] = [6, 8];
 
-    const socket = new WebSocket('ws://localhost:8080');
-    socket.addEventListener('open', () => {
-      socket.send(
-        JSON.stringify({ map }));
-    });
+    // const socket = new WebSocket('ws://localhost:8080');
+
+    socket.send(
+      JSON.stringify({ map }));
+
+    //  socket.close()
+
   }
 
+  function shutdownSystem() {
+    socket.close();
+    socket.onclose = function (event) {
+      if (event.wasClean) {
+        alert('[close] Connection closed cleanly');
+      } else {
+
+        alert('[close] Connection died');
+      }
+    };
+
+    setDisable(true);
+  }
+  // Boxes assigned a type
 
   return (
     <p>
@@ -224,7 +222,7 @@ function App() {
           <button class="btn btn-success" disabled={!disable} onClick={() => setDisable(false)}>Initialize</button>
           <button class="btn btn-success" onClick={sendState}>Send State</button>
 
-          <button class="btn btn-success" disabled={disable} onClick={sendPackage}>Add Package</button>
+          <button class="btn btn-success" disabled={disable} onClick={addPackage}>Add Package</button>
           <button class="btn btn-warning" disabled={disable} onClick={boxStats}>
             Stats
           </button>
@@ -238,10 +236,10 @@ function App() {
 
                 packageArr.forEach(function (elem) {
                   if (elem.destinationBox.name == "Box 1") {
-                    contents += elem.name + ", " + elem.type + "\n";
+                    dBox1_Arr.push(elem);
                   }
                 });
-                alert(contents);
+                alert(dBox1_Arr);
               }
               }> Contents
               </a>
@@ -251,7 +249,7 @@ function App() {
           {/* box 2 */}
           <div class="btn-group dropdown">
             <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 2</button>
-            <ul class="dropdown-menu">
+            <div class="dropdown-menu">
               <a class="dropdown-item" href="#" id="Box 2" onClick={() => {
                 let contents = "";
 
@@ -264,13 +262,13 @@ function App() {
               }
               }> Contents
               </a>
-            </ul>
+            </div>
           </div>
 
           {/* box 3 */}
           <div class="btn-group dropdown">
             <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 3</button>
-            <ul class="dropdown-menu">
+            <div class="dropdown-menu">
               <a class="dropdown-item" href="#" id="Box 3" onClick={() => {
                 let contents = "";
 
@@ -283,33 +281,16 @@ function App() {
               }
               }> Contents
               </a>
-            </ul>
+            </div>
           </div>
 
-          {/* box 4 */}
-          <div class="btn-group dropdown">
-            <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 4</button>
-            <ul class="dropdown-menu">
-              <a class="dropdown-item" href="#" id="Box 4" onClick={() => {
-                let contents = "";
-
-                packageArr.forEach(function (elem) {
-                  if (elem.destinationBox.name == "Box 4") {
-                    contents += elem.name + ", " + elem.type + "\n";
-
-                  }
-                });
-                alert(contents);
-
-              }
-              }> Contents
-              </a>
-            </ul>
+          <div>
+            <button class="btn btn-danger" disabled={disable} onClick={shutdownSystem}>
+              Shutdown
+            </button>
           </div>
         </div>
-
       </div>
-
     </p >
   );
 }
