@@ -23,6 +23,8 @@ wss.on("connection", ws => {
                 ws.send("A, B, C");
                 console.log("Box types: A, B, C");
                 break;
+            
+            
             // ws.send("Box stats");
         }
     });

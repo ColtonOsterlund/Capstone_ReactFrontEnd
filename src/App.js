@@ -14,111 +14,99 @@ function App() {
     name: "Box 1",
     capacity: boxCapacity
   };
-  let dBox1_Arr = [];
+  let dBox1_Arr = ['Apples', 'Oranges', 'A', 'B', 'C', 'D'];
 
   var dBox2 = {
     name: "Box 2",
     capacity: boxCapacity
   };
-  let dBox2_Arr = [];
+  let dBox2_Arr = ['Chocolate', 'Candy'];
 
   var dBox3 = {
     name: "Box 3",
     capacity: boxCapacity
   };
-  let dBox3_Arr = [];
+  let dBox3_Arr = ['Bread', 'Eggs'];
 
 
 
   const destinationBoxes = [dBox1, dBox2, dBox3];
 
-  function baddPackage() {
-    if (counter == 20) {
-      alert('All destination boxes are full!');
-    }
-
-    else {
-      let packageName = window.prompt('Enter your package name:');
-      let packageType = window.prompt('Enter your package type:');
-
-      // if (typeA_capacity < 0 && typeB_capacity > 0 && typeC_capacity > 0 && typeD_capacity > 0) {
-
-      if (packageName != null && packageType != null && packageName != '' && packageType != '') {
-        let random = Math.floor(Math.random() * destinationBoxes.length);
-        alert('Sorting into ' + destinationBoxes[random].name + ', current capacity: ' + --destinationBoxes[random].capacity);
-        //  destinationBoxes[random].capacity--;
-
-        var newPackage = {
-          name: packageName,
-          type: packageType,
-          destinationBox: destinationBoxes[random]
-        };
-      }
-
-      // if (newPackage.destinationBox.capacity == 0) {
-      //   alert('Capacity limit reached on ' + newPackage.destinationBox.name);
-      //   // Need to do something here to prevent box from being added to 
-      // }
-    }
-    counter++;
-    packageArr.push(newPackage);
-
-
-    // if (newPackage.destinationBox == dBox1) {
-    //   dBox1_Arr.push(newPackage);
-    // }
-
-    // else if (newPackage.destinationBox == dBox2) {
-    //   dBox2_Arr.push(newPackage);
-    // }
-
-    // else if (newPackage.destinationBox == dBox3) {
-    //   dBox3_Arr.push(newPackage);
-    // }
-
-    // else if (newPackage.destinationBox == dBox4) {
-    //   dBox4_Arr.push(newPackage);
-    // }
-    // Ask C++ side for input conveyor status
+  function connect() {
+    socket = new WebSocket('ws://localhost:8080');
   }
 
-
-  function checkAvail() {
+  function checkAvail(pName, pType, rand) {
     socket.send("0x01");
     socket.addEventListener("message", data => {
-      let status = data.data;
-      if (status.contains("Available")) {
-        alert("Input conveyor available");
-        return true;
-      }
+      let avail = new Promise(function (success, failure) {
+        let status = data.data;
+        if (status == "Available") {
+          success();
+        }
 
-      else {
-        alert("Input conveyor is busy...");
-      }
+        else {
+          failure();
+        }
+      });
+
+      avail.then(
+        function () {
+          alert("Input conveyor available");
+          socket.send(
+            JSON.stringify({
+              name: pName,
+              type: pType,
+              destinationBox: destinationBoxes[rand]
+            }));
+          alert("Package added to system");
+          /** FIGURE THIS OUT
+ *
+ *
+ * 
+ * 
+ * 
+ * */
+          socket.close();
+          shutdownSystem();
+          setDisable(false);
+        },
+        function () {
+          alert("Input conveyor is busy...");
+        }
+      );
     });
-    return false;
   }
 
-  function checkSupport(pType) {
+  function checkSupport(pName, pType, rand) {
     socket.send("0x03");
     socket.addEventListener("message", data => {
-      let types = data.data;
-      if (types.includes(pType)) {
-        alert("Package type supported");
-        return true;
-      }
+      let sup = new Promise(function (success, failure) {
+        let types = data.data;
+        if (types.includes(pType)) {
+          success();
+        }
 
-      else {
-        alert("Package type NOT supported");
-      }
+        else {
+          failure();
+        }
+      });
+
+      sup.then(
+        function () {
+          alert("Package type supported");
+          checkAvail(pName, pType, rand);
+        },
+        function () {
+          alert("Package type NOT supported");
+        }
+      );
     });
-    return false;
   }
 
 
 
   function addPackage() {
-
     let packageName = window.prompt('Enter your package name:');
     let packageType = window.prompt('Enter your package type:');
     let random = Math.floor(Math.random() * destinationBoxes.length);
@@ -128,25 +116,8 @@ function App() {
 
     // Check if package type is supported by boxes
 
-    if (checkSupport(packageType)) {
- /* FXN NOT MOVING PAST THIS POINT  
-*
-*
-*
-*
-*/
-      alert("AHH SUPPORT");
-      if (checkAvail()) {
-        socket.send(
-          JSON.stringify({
-            name: packageName,
-            type: packageType,
-            destinationBox: destinationBoxes[random]
-          }));
+    checkSupport(packageName, packageType, random);
 
-        alert("Package added to system");
-      }
-    }
 
     var newPackage = {
       name: packageName,
@@ -157,21 +128,38 @@ function App() {
     counter++;
     packageArr.push(newPackage);
 
+
   }
 
 
   function retrieve(boxName) {
     let remNum = window.prompt("How many packages would you like to remove?");
-    for (let i = 0; i < remNum; i++) {
-      alert(packageArr.pop());
+    switch (boxName) {
+      case "Box 1":
+        for (let i = 0; i < remNum; i++) {
+          alert("Removing " + dBox1_Arr.pop());
+        }
+        break;
+
+      case "Box 2":
+        for (let i = 0; i < remNum; i++) {
+          alert("Removing " + dBox2_Arr.pop());
+        }
+        break;
+
+      case "Box 3":
+        for (let i = 0; i < remNum; i++) {
+          alert("Removing " + dBox3_Arr.pop());
+        }
+        break;
     }
+
   }
 
   function boxStats() {
-
     socket.send("0x02");
     socket.addEventListener("message", data => {
-      //  alert('Server sent ' + data.data);
+      alert('Server sent ' + data.data);
     });
 
   }
@@ -234,14 +222,19 @@ function App() {
               <a class="dropdown-item" href="#" id="Box 1" onClick={() => {
                 let contents = "";
 
-                packageArr.forEach(function (elem) {
-                  if (elem.destinationBox.name == "Box 1") {
-                    dBox1_Arr.push(elem);
-                  }
+                dBox1_Arr.forEach(function (elem) {
+                  contents += elem + "\n";
                 });
-                alert(dBox1_Arr);
+
+                alert(contents);
+
               }
               }> Contents
+              </a>
+              <a class="dropdown-item" href="#" id="Box 1" onClick={() => {
+                retrieve("Box 1");
+              }
+              }> Retrieve
               </a>
             </div>
           </div>
@@ -253,14 +246,19 @@ function App() {
               <a class="dropdown-item" href="#" id="Box 2" onClick={() => {
                 let contents = "";
 
-                packageArr.forEach(function (elem) {
-                  if (elem.destinationBox.name == "Box 2") {
-                    contents += elem.name + ", " + elem.type + "\n";
-                  }
+                dBox2_Arr.forEach(function (elem) {
+                  contents += elem + "\n";
                 });
+
                 alert(contents);
+
               }
               }> Contents
+              </a>
+              <a class="dropdown-item" href="#" id="Box 2" onClick={() => {
+                retrieve("Box 2");
+              }
+              }> Retrieve
               </a>
             </div>
           </div>
@@ -272,14 +270,19 @@ function App() {
               <a class="dropdown-item" href="#" id="Box 3" onClick={() => {
                 let contents = "";
 
-                packageArr.forEach(function (elem) {
-                  if (elem.destinationBox.name == "Box 3") {
-                    contents += elem.name + ", " + elem.type + "\n";
-                  }
+                dBox3_Arr.forEach(function (elem) {
+                  contents += elem + "\n";
                 });
+
                 alert(contents);
+
               }
               }> Contents
+              </a>
+              <a class="dropdown-item" href="#" id="Box 3" onClick={() => {
+                retrieve("Box 3");
+              }
+              }> Retrieve
               </a>
             </div>
           </div>
