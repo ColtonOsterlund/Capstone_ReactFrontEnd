@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 function App() {
-  const Ysocket = new WebSocket('ws://localhost:8080');
+  const socket = new WebSocket('ws://localhost:8080');
 
 
   const [disable, setDisable] = React.useState(true);
@@ -167,7 +167,7 @@ function App() {
 
   function sendState() {
     var map = {};
-
+    map['id'] = 0x01
     map['1'] = [4, 2, -1, -1];
     map['2'] = [5, 3, -1, 1];
     map['3'] = [6, -1, -1, 2];
@@ -180,8 +180,7 @@ function App() {
 
     // const socket = new WebSocket('ws://localhost:8080');
 
-    socket.send("0x04" +
-      JSON.stringify(map));
+    socket.send(JSON.stringify(map));
 
     //  socket.close()
 
