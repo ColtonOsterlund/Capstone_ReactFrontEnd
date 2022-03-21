@@ -16,3 +16,12 @@ code {
   border: 3px solid blue;
 }
 
+.btn-toolbar{
+  justify-content: center;
+}
+
+.center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

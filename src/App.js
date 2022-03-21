@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
-
 function App() {
-  const socket = new WebSocket('ws://localhost:8080');
+  const Ysocket = new WebSocket('ws://localhost:8080');
+
 
   const [disable, setDisable] = React.useState(true);
   let counter = 0;
@@ -168,20 +168,20 @@ function App() {
   function sendState() {
     var map = {};
 
-    map['1'] = [2, 4];
-    map['2'] = [1, 3, 5];
-    map['3'] = [2, 6];
-    map['4'] = [1, 5, 7];
-    map['5'] = [2, 4, 6, 8];
-    map['6'] = [3, 5, 9];
-    map['7'] = [4, 8];
-    map['8'] = [5, 7, 9];
-    map['9'] = [6, 8];
+    map['1'] = [4, 2, -1, -1];
+    map['2'] = [5, 3, -1, 1];
+    map['3'] = [6, -1, -1, 2];
+    map['4'] = [7, 5, 1, -1];
+    map['5'] = [8, 6, 2, 4];
+    map['6'] = [9, -1, 3, 5];
+    map['7'] = [-1, 8, 4, -1];
+    map['8'] = [-1, 9, 5, 7];
+    map['9'] = [-1, -1, 6, 8];
 
     // const socket = new WebSocket('ws://localhost:8080');
 
-    socket.send(
-      JSON.stringify({ map }));
+    socket.send("0x04" +
+      JSON.stringify(map));
 
     //  socket.close()
 
@@ -204,94 +204,196 @@ function App() {
 
   return (
     <p>
+
       <div className="card">
         <div className="card-header text-center">Warehouse View</div>
-        <div className="card-body">
-          <button class="btn btn-success" disabled={!disable} onClick={() => setDisable(false)}>Initialize</button>
-          <button class="btn btn-success" onClick={sendState}>Send State</button>
+        <div className="card-body text-center">
 
-          <button class="btn btn-success" disabled={disable} onClick={addPackage}>Add Package</button>
-          <button class="btn btn-warning" disabled={disable} onClick={boxStats}>
-            Stats
-          </button>
+          <div class="row justify-content-center">
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./dbox.jpg")} />
+              </div>
+            </div>
 
-          {/* box 1 */}
-          <div class="btn-group dropdown">
-            <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 1</button>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#" id="Box 1" onClick={() => {
-                let contents = "";
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./dbox.jpg")} />
+              </div>
+            </div>
 
-                dBox1_Arr.forEach(function (elem) {
-                  contents += elem + "\n";
-                });
-
-                alert(contents);
-
-              }
-              }> Contents
-              </a>
-              <a class="dropdown-item" href="#" id="Box 1" onClick={() => {
-                retrieve("Box 1");
-              }
-              }> Retrieve
-              </a>
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./dbox.jpg")} />
+              </div>
             </div>
           </div>
 
-          {/* box 2 */}
-          <div class="btn-group dropdown">
-            <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 2</button>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#" id="Box 2" onClick={() => {
-                let contents = "";
+          <div class="row justify-content-center">
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./conveyor.jpg")} />
+              </div>
+            </div>
 
-                dBox2_Arr.forEach(function (elem) {
-                  contents += elem + "\n";
-                });
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./conveyor.jpg")} />
+              </div>
+            </div>
 
-                alert(contents);
-
-              }
-              }> Contents
-              </a>
-              <a class="dropdown-item" href="#" id="Box 2" onClick={() => {
-                retrieve("Box 2");
-              }
-              }> Retrieve
-              </a>
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./conveyor.jpg")} />
+              </div>
             </div>
           </div>
 
-          {/* box 3 */}
-          <div class="btn-group dropdown">
-            <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 3</button>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#" id="Box 3" onClick={() => {
-                let contents = "";
+          <div class="row justify-content-center">
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./conveyor.jpg")} />
+              </div>
+            </div>
 
-                dBox3_Arr.forEach(function (elem) {
-                  contents += elem + "\n";
-                });
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./conveyor.jpg")} />
+              </div>
+            </div>
 
-                alert(contents);
-
-              }
-              }> Contents
-              </a>
-              <a class="dropdown-item" href="#" id="Box 3" onClick={() => {
-                retrieve("Box 3");
-              }
-              }> Retrieve
-              </a>
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./conveyor.jpg")} />
+              </div>
             </div>
           </div>
 
-          <div>
-            <button class="btn btn-danger" disabled={disable} onClick={shutdownSystem}>
-              Shutdown
-            </button>
+          <div class="row justify-content-center">
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./conveyor.jpg")} />
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./conveyor.jpg")} />
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="thumbnail">
+                <img src={require("./conveyor.jpg")} />
+              </div>
+            </div>
           </div>
+
+          <div class="row justify-content-center">
+            <div class="btn-toolbar">
+              <div class="btn-group mr-4" role="group">
+                <button class="btn btn-success" disabled={!disable} onClick={() => setDisable(false)}>Initialize</button>
+              </div>
+              <div class="btn-group mr-4" role="group">
+                <button class="btn btn-success" onClick={sendState}>Send State</button>
+              </div>
+
+
+              <div class="btn-group mr-4" role="group">
+                <button class="btn btn-success" disabled={disable} onClick={addPackage}>Add Package</button>            </div>
+
+              <div class="btn-group mr-4" role="group">
+                <button class="btn btn-warning" disabled={disable} onClick={boxStats}>
+                  Stats
+                </button>
+              </div>
+
+              {/* box 1 */}
+              <div class="btn-group dropdown">
+                <div class="btn-group mr-4" role="group">
+                  <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 1</button>
+                </div>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="/#" id="Box 1" onClick={() => {
+                    let contents = "";
+
+                    dBox1_Arr.forEach(function (elem) {
+                      contents += elem + "\n";
+                    });
+
+                    alert(contents);
+
+                  }
+                  }> Contents
+                  </a>
+                  <a class="dropdown-item" href="/#" id="Box 1" onClick={() => {
+                    retrieve("Box 1");
+                  }
+                  }> Retrieve
+                  </a>
+                </div>
+              </div>
+
+              {/* box 2 */}
+              <div class="btn-group dropdown">
+                <div class="btn-group mr-4" role="group">
+                  <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 2</button>
+                </div>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="/#" id="Box 2" onClick={() => {
+                    let contents = "";
+
+                    dBox2_Arr.forEach(function (elem) {
+                      contents += elem + "\n";
+                    });
+
+                    alert(contents);
+
+                  }
+                  }> Contents
+                  </a>
+                  <a class="dropdown-item" href="/#" id="Box 2" onClick={() => {
+                    retrieve("Box 2");
+                  }
+                  }> Retrieve
+                  </a>
+                </div>
+              </div>
+
+              {/* box 3 */}
+              <div class="btn-group dropdown">
+                <div class="btn-group mr-4" role="group">
+                  <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 3</button>
+                </div>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="/#" id="Box 3" onClick={() => {
+                    let contents = "";
+
+                    dBox3_Arr.forEach(function (elem) {
+                      contents += elem + "\n";
+                    });
+
+                    alert(contents);
+
+                  }
+                  }> Contents
+                  </a>
+                  <a class="dropdown-item" href="/#" id="Box 3" onClick={() => {
+                    retrieve("Box 3");
+                  }
+                  }> Retrieve
+                  </a>
+                </div>
+              </div>
+
+              <div class="btn-group mr-4" role="group">
+
+                <button class="btn btn-danger" disabled={disable} onClick={shutdownSystem}>
+                  Shutdown
+                </button>
+              </div>
+            </div>
+          </div >
         </div>
       </div>
     </p >
