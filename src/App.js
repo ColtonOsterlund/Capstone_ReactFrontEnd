@@ -1,11 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function App() {
-  const socket = new WebSocket('ws://localhost:8080');
 
+  var socket;
+
+  useEffect(() => {
+    socket = new WebSocket('ws://localhost:8080');
+    socket.addEventListener("message", data => {  
+      var info = JSON.parse(data);
+      switch (info.id) {
+        case "4":
+          alert(info.details);
+          if(info.success)
+          {
+            alert("Package successfully added to system");
+          }
+          break;
+  
+        case "5":
+          break;
+  
+        case "6":
+          break
+      };
+    });
+  
+  })
+
+  
 
   const [disable, setDisable] = React.useState(true);
-  let counter = 0;
   const boxCapacity = 5;
   let packageArr = [];
   //const [packageArr, setPackageArr] = useState([{ name: "", type: "", destinationBox: "" }]);
@@ -32,105 +56,25 @@ function App() {
 
   const destinationBoxes = [dBox1, dBox2, dBox3];
 
-  function connect() {
-    socket = new WebSocket('ws://localhost:8080');
-  }
-
-  function checkAvail(pName, pType, rand) {
-    socket.send("0x01");
-    socket.addEventListener("message", data => {
-      let avail = new Promise(function (success, failure) {
-        let status = data.data;
-        if (status == "Available") {
-          success();
-        }
-
-        else {
-          failure();
-        }
-      });
-
-      avail.then(
-        function () {
-          alert("Input conveyor available");
-          socket.send(
-            JSON.stringify({
-              name: pName,
-              type: pType,
-              destinationBox: destinationBoxes[rand]
-            }));
-          alert("Package added to system");
-          /** FIGURE THIS OUT
- *
- *
- * 
- * 
- * 
- * */
-          socket.close();
-          shutdownSystem();
-          setDisable(false);
-        },
-        function () {
-          alert("Input conveyor is busy...");
-        }
-      );
-    });
-  }
-
-  function checkSupport(pName, pType, rand) {
-    socket.send("0x03");
-    socket.addEventListener("message", data => {
-      let sup = new Promise(function (success, failure) {
-        let types = data.data;
-        if (types.includes(pType)) {
-          success();
-        }
-
-        else {
-          failure();
-        }
-      });
-
-      sup.then(
-        function () {
-          alert("Package type supported");
-          checkAvail(pName, pType, rand);
-        },
-        function () {
-          alert("Package type NOT supported");
-        }
-      );
-    });
-  }
-
-
 
   function addPackage() {
-    let packageName = window.prompt('Enter your package name:');
-    let packageType = window.prompt('Enter your package type:');
-    let random = Math.floor(Math.random() * destinationBoxes.length);
-    // if (packageName != null && packageType != null && packageName != '' && packageType != '') {
-    //alert('Sorting into ' + destinationBoxes[random].name + ', current capacity: ' + --destinationBoxes[random].capacity);
-    //  }
+    let packageType = window.prompt('Select a package type:', '0, 1, 2');
+
 
     // Check if package type is supported by boxes
 
-    checkSupport(packageName, packageType, random);
 
-
-    var newPackage = {
-      name: packageName,
-      type: packageType,
-      destinationBox: destinationBoxes[random]
+    var msg = {
+      id: "1",
+      type: packageType
     };
 
-    counter++;
-    packageArr.push(newPackage);
+    socket.send(JSON.stringify(msg));
 
-
+    packageArr.push(msg);
   }
 
+  
 
   function retrieve(boxName) {
     let remNum = window.prompt("How many packages would you like to remove?");
@@ -157,7 +101,10 @@ function App() {
   }
 
   function boxStats() {
-    socket.send("0x02");
+    let msg = {
+      id: "2"
+    }
+    socket.send(JSON.stringify(msg));
     socket.addEventListener("message", data => {
       alert('Server sent ' + data.data);
     });
