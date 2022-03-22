@@ -6,28 +6,25 @@ function App() {
 
   useEffect(() => {
     socket = new WebSocket('ws://localhost:8080');
-    socket.addEventListener("message", data => {  
-      var info = JSON.parse(data);
+    socket.addEventListener("message", data => {
+      var info = JSON.parse(data.data);
       switch (info.id) {
         case "4":
           alert(info.details);
-          if(info.success)
-          {
-            alert("Package successfully added to system");
-          }
+         
           break;
-  
+
         case "5":
           break;
-  
+
         case "6":
           break
       };
     });
-  
-  })
 
-  
+  });
+
+
 
   const [disable, setDisable] = React.useState(true);
   const boxCapacity = 5;
@@ -60,10 +57,7 @@ function App() {
   function addPackage() {
     let packageType = window.prompt('Select a package type:', '0, 1, 2');
 
-
     // Check if package type is supported by boxes
-
-
     var msg = {
       id: "1",
       type: packageType
@@ -74,7 +68,7 @@ function App() {
     packageArr.push(msg);
   }
 
-  
+
 
   function retrieve(boxName) {
     let remNum = window.prompt("How many packages would you like to remove?");
