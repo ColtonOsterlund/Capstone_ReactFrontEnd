@@ -1,27 +1,33 @@
 import React, { useState, useEffect } from "react";
-import {socket} from "./socket";
+import { socket } from "./socket";
 
 function App() {
-  
+
   var status = 0;
-  
+
   useEffect(() => {
     socket.addEventListener("message", data => {
       var info = JSON.parse(data.data);
       switch (info.id) {
-        case "4":
-          alert(info.details);
+        case "4": //Add Package response
           if (info.success) {
-            alert("Sorted into Box: " + info.box_id);
+            alert("Target Box: " + info.box_id);
+          }
+
+          else {
+            alert(info.details)
           }
           break;
 
-        case "7":
+        case "5": //Package Arrived 
+          alert("Package (ID: " + info.package_id + ") successfully arrived at Box " + info.box_id)
           break;
 
-
-        case "6":
-          break
+        case "7": //Destination Box Status response
+          alert("Box: " + info.box_id + " , holding Package type " + info.package_type);
+          alert("Packages stored: " + info.packages_stored);
+          alert("Packages in transit: " + info.packages_in_transit);
+          break;
       };
     });
   }, []);
@@ -33,40 +39,9 @@ function App() {
   let packageArr = [];
   //const [packageArr, setPackageArr] = useState([{ name: "", type: "", destinationBox: "" }]);
 
-  function addPackage() {
-
-    let packageType = window.prompt('Select a package type:', 'Accepted types: 0, 1, 2');
-
-    // Check if package type is supported by boxes
-    var msg = {
-      id: "1",
-      type: packageType
-    };
-
-    socket.send(JSON.stringify(msg));
-
-    packageArr.push(msg);
-  }
-
-
-
-  function retrieve(boxName) {
-    let remNum = window.prompt("How many packages would you like to remove?");
-
-
-  }
-
-  function boxStats() {
-    let msg = {
-      id: "2"
-    }
-    socket.send(JSON.stringify(msg));
-  }
-
-
   function sendState() {
     var map = {};
-    map['id'] = 0x01
+    map['id'] = "1"
     map['1'] = [4, 2, -1, -1];
     map['2'] = [5, 3, -1, 1];
     map['3'] = [6, -1, -1, 2];
@@ -77,10 +52,53 @@ function App() {
     map['8'] = [-1, 9, 5, 7];
     map['9'] = [-1, -1, 6, 8];
 
-
     socket.send(JSON.stringify(map));
 
   }
+
+
+  function addBox() {
+    let converyorID = window.prompt('Enter Conveyor ID');
+    let boxID = window.prompt('Enter Box ID');
+
+    var msg = {
+      id: "2",
+      conveyor_id: converyorID,
+      box_id: boxID
+    };
+
+    socket.send(JSON.stringify(msg));
+  }
+
+
+  function addPackage() {
+    let packageType = window.prompt('Select a package type:', 'Accepted types: 0, 1, 2');
+
+    // Check if package type is supported by boxes
+    var msg = {
+      id: "3",
+      type: packageType
+    };
+
+    socket.send(JSON.stringify(msg));
+  }
+
+  function retrieve(boxName) {
+    let remNum = window.prompt("How many packages would you like to remove?");
+
+
+  }
+
+  function boxStats() {
+    let boxID = window.prompt('Enter Box ID');
+    let msg = {
+      id: "6",
+      box_id: boxID
+    };
+
+    socket.send(JSON.stringify(msg));
+  }
+
 
   function shutdownSystem() {
     socket.close();
@@ -93,8 +111,8 @@ function App() {
       }
     };
     setDisable(true);
-  //  status++;
-  //  alert(status);
+    //  status++;
+    //  alert(status);
   }
   // Boxes assigned a type
 
@@ -204,69 +222,12 @@ function App() {
                 </button>
               </div>
 
-              {/* box 1 */}
-              <div class="btn-group dropdown">
-                <div class="btn-group mr-4" role="group">
-                  <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 1</button>
-                </div>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" href="/#" id="Box 1" onClick={() => {
-                    let contents = "";
-                    alert(contents);
+              <div class="btn-group mr-4" role="group">
 
-                  }
-                  }> Contents
-                  </a>
-                  <a class="dropdown-item" href="/#" id="Box 1" onClick={() => {
-                    retrieve("Box 1");
-                  }
-                  }> Retrieve
-                  </a>
-                </div>
+                <button class="btn btn-danger" disabled={disable} onClick={addBox}>
+                  Add Box
+                </button>
               </div>
-
-              {/* box 2 */}
-              <div class="btn-group dropdown">
-                <div class="btn-group mr-4" role="group">
-                  <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 2</button>
-                </div>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" href="/#" id="Box 2" onClick={() => {
-                    let contents = "";
-                    alert(contents);
-
-                  }
-                  }> Contents
-                  </a>
-                  <a class="dropdown-item" href="/#" id="Box 2" onClick={() => {
-                    retrieve("Box 2");
-                  }
-                  }> Retrieve
-                  </a>
-                </div>
-              </div>
-
-              {/* box 3 */}
-              <div class="btn-group dropdown">
-                <div class="btn-group mr-4" role="group">
-                  <button class="btn btn-danger dropdown-toggle" disabled={disable} id="ddMenu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box 3</button>
-                </div>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" href="/#" id="Box 3" onClick={() => {
-                    let contents = "";
-                    alert(contents);
-
-                  }
-                  }> Contents
-                  </a>
-                  <a class="dropdown-item" href="/#" id="Box 3" onClick={() => {
-                    retrieve("Box 3");
-                  }
-                  }> Retrieve
-                  </a>
-                </div>
-              </div>
-
               <div class="btn-group mr-4" role="group">
 
                 <button class="btn btn-danger" disabled={disable} onClick={shutdownSystem}>
