@@ -1,28 +1,30 @@
 import React, { useState, useEffect } from "react";
+import {socket} from "./socket";
 
 function App() {
-
-  var socket;
-
+  
+  var status = 0;
+  
   useEffect(() => {
-    socket = new WebSocket('ws://localhost:8080');
     socket.addEventListener("message", data => {
       var info = JSON.parse(data.data);
       switch (info.id) {
         case "4":
           alert(info.details);
-         
+          if (info.success) {
+            alert("Sorted into Box: " + info.box_id);
+          }
           break;
 
-        case "5":
+        case "7":
           break;
+
 
         case "6":
           break
       };
     });
-
-  });
+  }, []);
 
 
 
@@ -31,31 +33,9 @@ function App() {
   let packageArr = [];
   //const [packageArr, setPackageArr] = useState([{ name: "", type: "", destinationBox: "" }]);
 
-  var dBox1 = {
-    name: "Box 1",
-    capacity: boxCapacity
-  };
-  let dBox1_Arr = ['Apples', 'Oranges', 'A', 'B', 'C', 'D'];
-
-  var dBox2 = {
-    name: "Box 2",
-    capacity: boxCapacity
-  };
-  let dBox2_Arr = ['Chocolate', 'Candy'];
-
-  var dBox3 = {
-    name: "Box 3",
-    capacity: boxCapacity
-  };
-  let dBox3_Arr = ['Bread', 'Eggs'];
-
-
-
-  const destinationBoxes = [dBox1, dBox2, dBox3];
-
-
   function addPackage() {
-    let packageType = window.prompt('Select a package type:', '0, 1, 2');
+
+    let packageType = window.prompt('Select a package type:', 'Accepted types: 0, 1, 2');
 
     // Check if package type is supported by boxes
     var msg = {
@@ -72,25 +52,7 @@ function App() {
 
   function retrieve(boxName) {
     let remNum = window.prompt("How many packages would you like to remove?");
-    switch (boxName) {
-      case "Box 1":
-        for (let i = 0; i < remNum; i++) {
-          alert("Removing " + dBox1_Arr.pop());
-        }
-        break;
 
-      case "Box 2":
-        for (let i = 0; i < remNum; i++) {
-          alert("Removing " + dBox2_Arr.pop());
-        }
-        break;
-
-      case "Box 3":
-        for (let i = 0; i < remNum; i++) {
-          alert("Removing " + dBox3_Arr.pop());
-        }
-        break;
-    }
 
   }
 
@@ -99,10 +61,6 @@ function App() {
       id: "2"
     }
     socket.send(JSON.stringify(msg));
-    socket.addEventListener("message", data => {
-      alert('Server sent ' + data.data);
-    });
-
   }
 
 
@@ -119,11 +77,8 @@ function App() {
     map['8'] = [-1, 9, 5, 7];
     map['9'] = [-1, -1, 6, 8];
 
-    // const socket = new WebSocket('ws://localhost:8080');
 
     socket.send(JSON.stringify(map));
-
-    //  socket.close()
 
   }
 
@@ -137,8 +92,9 @@ function App() {
         alert('[close] Connection died');
       }
     };
-
     setDisable(true);
+  //  status++;
+  //  alert(status);
   }
   // Boxes assigned a type
 
@@ -256,11 +212,6 @@ function App() {
                 <div class="dropdown-menu">
                   <a class="dropdown-item" href="/#" id="Box 1" onClick={() => {
                     let contents = "";
-
-                    dBox1_Arr.forEach(function (elem) {
-                      contents += elem + "\n";
-                    });
-
                     alert(contents);
 
                   }
@@ -282,11 +233,6 @@ function App() {
                 <div class="dropdown-menu">
                   <a class="dropdown-item" href="/#" id="Box 2" onClick={() => {
                     let contents = "";
-
-                    dBox2_Arr.forEach(function (elem) {
-                      contents += elem + "\n";
-                    });
-
                     alert(contents);
 
                   }
@@ -308,11 +254,6 @@ function App() {
                 <div class="dropdown-menu">
                   <a class="dropdown-item" href="/#" id="Box 3" onClick={() => {
                     let contents = "";
-
-                    dBox3_Arr.forEach(function (elem) {
-                      contents += elem + "\n";
-                    });
-
                     alert(contents);
 
                   }
