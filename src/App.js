@@ -9,7 +9,7 @@ function App() {
     socket.addEventListener("message", data => {
       var info = JSON.parse(data.data);
       switch (info.id) {
-        case "4": //Add Package response
+        case 4: //Add Package response
           if (info.success) {
             alert("Target Box: " + info.box_id);
           }
@@ -19,17 +19,17 @@ function App() {
           }
           break;
 
-        case "5": //Package Arrived 
+        case 5: //Package Arrived 
           alert("Package (ID: " + info.package_id + ") successfully arrived at Box " + info.box_id)
           break;
 
-        case "7": //Destination Box Status response
+        case 7: //Destination Box Status response
           alert("Box: " + info.box_id + " , holding Package type " + info.package_type);
           alert("Packages stored: " + info.packages_stored);
           alert("Packages in transit: " + info.packages_in_transit);
           break;
 
-        case "9": //Remove Package response
+        case 9: //Remove Package response
           if (info.success) {
             alert("Package " + info.package_id + " from Box " + info.box_id + " removed successfully");
           }
@@ -39,7 +39,7 @@ function App() {
           }
           break;
 
-        case "11": //Clear Box  response
+        case 11: //Clear Box  response
           if (info.success) {
             alert("Box: " + info.box_id + " has been cleared");
             alert("Packages removed: " + info.packages_removed);
@@ -62,7 +62,7 @@ function App() {
 
   function sendState() {
     var map = {};
-    map['id'] = "1"
+    map['id'] = 1
     map['1'] = [4, 2, -1, -1];
     map['2'] = [5, 3, -1, 1];
     map['3'] = [6, -1, -1, 2];
@@ -83,7 +83,7 @@ function App() {
     let boxID = window.prompt('Enter Box ID');
 
     var msg = {
-      id: "2",
+      id: 2,
       conveyor_id: converyorID,
       box_id: boxID
     };
@@ -97,7 +97,7 @@ function App() {
 
     // Check if package type is supported by boxes
     var msg = {
-      id: "3",
+      id: 3,
       type: packageType
     };
 
@@ -108,7 +108,7 @@ function App() {
   function boxStatus() {
     let boxID = window.prompt('Enter Box ID');
     let msg = {
-      id: "6",
+      id: 6,
       box_id: boxID
     };
 
@@ -120,7 +120,7 @@ function App() {
     let packageID = window.prompt('Enter Package ID');
 
     var msg = {
-      id: "8",
+      id: 8,
       box_id: boxID,
       package_id: packageID
     };
@@ -132,7 +132,7 @@ function App() {
     let boxID = window.prompt('Enter Box ID');
 
     var msg = {
-      id: "10",
+      id: 10,
       box_id: boxID
     };
 
