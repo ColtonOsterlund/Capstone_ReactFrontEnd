@@ -28,6 +28,27 @@ function App() {
           alert("Packages stored: " + info.packages_stored);
           alert("Packages in transit: " + info.packages_in_transit);
           break;
+
+        case "9": //Remove Package response
+          if (info.success) {
+            alert("Package " + info.package_id + " from Box " + info.box_id + " removed successfully");
+          }
+
+          else {
+            alert(info.details);
+          }
+          break;
+
+        case "11": //Clear Box  response
+          if (info.success) {
+            alert("Box: " + info.box_id + " has been cleared");
+            alert("Packages removed: " + info.packages_removed);
+          }
+
+          else {
+            alert(info.details);
+          }
+          break;
       };
     });
   }, []);
@@ -83,16 +104,35 @@ function App() {
     socket.send(JSON.stringify(msg));
   }
 
-  function retrieve(boxName) {
-    let remNum = window.prompt("How many packages would you like to remove?");
 
-
-  }
-
-  function boxStats() {
+  function boxStatus() {
     let boxID = window.prompt('Enter Box ID');
     let msg = {
       id: "6",
+      box_id: boxID
+    };
+
+    socket.send(JSON.stringify(msg));
+  }
+
+  function removePackage() {
+    let boxID = window.prompt('Enter Box ID');
+    let packageID = window.prompt('Enter Package ID');
+
+    var msg = {
+      id: "8",
+      box_id: boxID,
+      package_id: packageID
+    };
+
+    socket.send(JSON.stringify(msg));
+  }
+
+  function clearBox() {
+    let boxID = window.prompt('Enter Box ID');
+
+    var msg = {
+      id: "10",
       box_id: boxID
     };
 
@@ -208,34 +248,51 @@ function App() {
               <div class="btn-group mr-4" role="group">
                 <button class="btn btn-success" disabled={!disable} onClick={() => setDisable(false)}>Initialize</button>
               </div>
+
               <div class="btn-group mr-4" role="group">
                 <button class="btn btn-success" onClick={sendState}>Send State</button>
               </div>
 
 
               <div class="btn-group mr-4" role="group">
-                <button class="btn btn-success" disabled={disable} onClick={addPackage}>Add Package</button>            </div>
-
-              <div class="btn-group mr-4" role="group">
-                <button class="btn btn-warning" disabled={disable} onClick={boxStats}>
-                  Stats
-                </button>
+                <button class="btn btn-success" disabled={disable} onClick={addPackage}>Add Package</button>
               </div>
 
-              <div class="btn-group mr-4" role="group">
 
-                <button class="btn btn-danger" disabled={disable} onClick={addBox}>
+              <div class="btn-group mr-4" role="group">
+                <button class="btn btn-primary" disabled={disable} onClick={addBox}>
                   Add Box
                 </button>
               </div>
-              <div class="btn-group mr-4" role="group">
 
+
+              <div class="btn-group mr-4" role="group">
+                <button class="btn btn-primary" disabled={disable} onClick={boxStatus}>
+                  Box Status
+                </button>
+              </div>
+
+
+              <div class="btn-group mr-4" role="group">
+                <button class="btn btn-warning" disabled={disable} onClick={removePackage}>
+                  Remove Package
+                </button>
+              </div>
+
+              <div class="btn-group mr-4" role="group">
+                <button class="btn btn-warning" disabled={disable} onClick={clearBox}>
+                  Clear Box
+                </button>
+              </div>
+
+
+              <div class="btn-group mr-4" role="group">
                 <button class="btn btn-danger" disabled={disable} onClick={shutdownSystem}>
                   Shutdown
                 </button>
               </div>
-            </div>
-          </div >
+            </div >
+          </div>
         </div>
       </div>
     </p >
