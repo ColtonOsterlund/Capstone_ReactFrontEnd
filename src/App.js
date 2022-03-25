@@ -3,8 +3,6 @@ import { socket } from "./socket";
 
 function App() {
 
-  var status = 0;
-
   useEffect(() => {
     socket.addEventListener("message", data => {
       var info = JSON.parse(data.data);
@@ -54,11 +52,7 @@ function App() {
   }, []);
 
 
-
   const [disable, setDisable] = React.useState(true);
-  const boxCapacity = 5;
-  let packageArr = [];
-  //const [packageArr, setPackageArr] = useState([{ name: "", type: "", destinationBox: "" }]);
 
   function sendState() {
     var map = {};
@@ -84,8 +78,8 @@ function App() {
 
     var msg = {
       id: 2,
-      conveyor_id: converyorID,
-      box_id: boxID
+      conveyor_id: parseInt(converyorID),
+      box_id: parseInt(boxID)
     };
 
     socket.send(JSON.stringify(msg));
@@ -94,11 +88,13 @@ function App() {
 
   function addPackage() {
     let packageType = window.prompt('Select a package type:', 'Accepted types: 0, 1, 2');
+    let packageID = window.prompt('Enter Package ID');
 
-    // Check if package type is supported by boxes
+
     var msg = {
       id: 3,
-      type: packageType
+      type: parseInt(packageType),
+      package_id: parseInt(packageID)
     };
 
     socket.send(JSON.stringify(msg));
@@ -109,7 +105,7 @@ function App() {
     let boxID = window.prompt('Enter Box ID');
     let msg = {
       id: 6,
-      box_id: boxID
+      box_id: parseInt(boxID)
     };
 
     socket.send(JSON.stringify(msg));
@@ -121,8 +117,8 @@ function App() {
 
     var msg = {
       id: 8,
-      box_id: boxID,
-      package_id: packageID
+      box_id: parseInt(boxID),
+      package_id: parseInt(packageID)
     };
 
     socket.send(JSON.stringify(msg));
@@ -133,7 +129,7 @@ function App() {
 
     var msg = {
       id: 10,
-      box_id: boxID
+      box_id: parseInt(boxID)
     };
 
     socket.send(JSON.stringify(msg));
@@ -144,17 +140,14 @@ function App() {
     socket.close();
     socket.onclose = function (event) {
       if (event.wasClean) {
-        alert('[close] Connection closed cleanly');
+        alert('System shutdown cleanly');
       } else {
 
-        alert('[close] Connection died');
+        alert('Error on system shutdown');
       }
     };
     setDisable(true);
-    //  status++;
-    //  alert(status);
   }
-  // Boxes assigned a type
 
   return (
     <p>
