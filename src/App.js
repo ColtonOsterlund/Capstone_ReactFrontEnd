@@ -53,6 +53,7 @@ function App() {
 
 
   const [disable, setDisable] = React.useState(true);
+  let package_id = 0;
 
   function sendState() {
     var map = {};
@@ -73,68 +74,101 @@ function App() {
 
 
   function addBox() {
-    let converyorID = window.prompt('Enter Conveyor ID');
-    let boxID = window.prompt('Enter Box ID');
+    let conveyorID = parseInt(window.prompt('Enter Conveyor ID'));
+    let boxID = parseInt(window.prompt('Enter Box ID'));
 
-    var msg = {
-      id: 2,
-      conveyor_id: parseInt(converyorID),
-      box_id: parseInt(boxID)
-    };
+    if (conveyorID >= 1 && conveyorID <= 9 && boxID >= 1 && boxID <= 3) {
+      var msg = {
+        id: 2,
+        conveyor_id: conveyorID,
+        box_id: boxID
+      };
 
-    socket.send(JSON.stringify(msg));
+      if (noNulls(msg)) {
+        socket.send(JSON.stringify(msg));
+      }
+    }
+
+    else {
+      alert("Invalid entry");
+      return;
+    }
   }
 
 
-  function addPackage() {
-    let packageType = window.prompt('Select a package type:', 'Accepted types: 0, 1, 2');
-    let packageID = window.prompt('Enter Package ID');
-
+  function addPackage(type) {
+    let packageID = parseInt(package_id);
+    let packageType = parseInt(type);
+    let types = ["Red", "Yellow", "Green"];
 
     var msg = {
       id: 3,
-      type: parseInt(packageType),
-      package_id: parseInt(packageID)
+      type: packageType,
+      package_id: packageID
     };
 
-    socket.send(JSON.stringify(msg));
+    if (noNulls(msg)) {
+      alert("Added " + types[packageType] + " Package with ID: " + packageID);
+      socket.send(JSON.stringify(msg));
+      package_id++;
+    }
   }
 
 
-  function boxStatus() {
-    let boxID = window.prompt('Enter Box ID');
+  function boxStatus(boxNumber) {
+    let boxID = parseInt(boxNumber);
     let msg = {
       id: 6,
-      box_id: parseInt(boxID)
+      box_id: boxID
     };
 
-    socket.send(JSON.stringify(msg));
+    if (noNulls(msg)) {
+      socket.send(JSON.stringify(msg));
+    }
   }
 
-  function removePackage() {
-    let boxID = window.prompt('Enter Box ID');
-    let packageID = window.prompt('Enter Package ID');
+  function removePackage(boxNum) {
+    let boxID = parseInt(boxNum);
+    let packageID = parseInt(window.prompt('Enter Package ID'));
 
-    var msg = {
-      id: 8,
-      box_id: parseInt(boxID),
-      package_id: parseInt(packageID)
-    };
+    if (packageID >= 0 && packageID <= package_id) {
+      var msg = {
+        id: 8,
+        box_id: boxID,
+        package_id: packageID
+      };
 
-    socket.send(JSON.stringify(msg));
+      if (noNulls(msg)) {
+        socket.send(JSON.stringify(msg));
+      }
+    }
+
+    else { alert("Package ID does not exist"); };
   }
 
-  function clearBox() {
-    let boxID = window.prompt('Enter Box ID');
+  function clearBox(boxNum) {
+    let boxID = parseInt(boxNum);
 
     var msg = {
       id: 10,
-      box_id: parseInt(boxID)
+      box_id: boxID
     };
 
-    socket.send(JSON.stringify(msg));
+    if (noNulls(msg)) {
+      socket.send(JSON.stringify(msg));
+    }
   }
 
+  function noNulls(clientObject) {
+    for (let x in clientObject) {
+      if (clientObject[x] == null) {
+        alert("Null field in message");
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   function shutdownSystem() {
     socket.close();
@@ -247,8 +281,13 @@ function App() {
               </div>
 
 
-              <div class="btn-group mr-4" role="group">
-                <button class="btn btn-success" disabled={disable} onClick={addPackage}>Add Package</button>
+              <div class="btn-group mr-4 dropup" role="group">
+                <button class="btn btn-success dropdown-toggle" disabled={disable} type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Add Package</button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                  <button class="dropdown-item" type="button" onClick={() => { addPackage(0) }}>Red</button>
+                  <button class="dropdown-item" type="button" onClick={() => { addPackage(1) }}>Yellow</button>
+                  <button class="dropdown-item" type="button" onClick={() => { addPackage(2) }}>Green</button>
+                </div>
               </div>
 
 
@@ -259,23 +298,32 @@ function App() {
               </div>
 
 
-              <div class="btn-group mr-4" role="group">
-                <button class="btn btn-primary" disabled={disable} onClick={boxStatus}>
-                  Box Status
-                </button>
+              <div class="btn-group mr-4 dropup" role="group">
+                <button class="btn btn-primary dropdown-toggle" disabled={disable} type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box Status</button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                  <button class="dropdown-item" type="button" onClick={() => { boxStatus(1) }}>Box 1</button>
+                  <button class="dropdown-item" type="button" onClick={() => { boxStatus(2) }}>Box 2</button>
+                  <button class="dropdown-item" type="button" onClick={() => { boxStatus(3) }}>Box 3</button>
+                </div>
               </div>
 
 
-              <div class="btn-group mr-4" role="group">
-                <button class="btn btn-warning" disabled={disable} onClick={removePackage}>
-                  Remove Package
-                </button>
+              <div class="btn-group mr-4 dropup" role="group">
+                <button class="btn btn-primary dropdown-toggle" disabled={disable} type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Remove Package</button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                  <button class="dropdown-item" type="button" onClick={() => { removePackage(1) }}>Box 1</button>
+                  <button class="dropdown-item" type="button" onClick={() => { removePackage(2) }}>Box 2</button>
+                  <button class="dropdown-item" type="button" onClick={() => { removePackage(3) }}>Box 3</button>
+                </div>
               </div>
 
-              <div class="btn-group mr-4" role="group">
-                <button class="btn btn-warning" disabled={disable} onClick={clearBox}>
-                  Clear Box
-                </button>
+              <div class="btn-group mr-4 dropup" role="group">
+                <button class="btn btn-warning dropdown-toggle" disabled={disable} type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Clear Box</button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                  <button class="dropdown-item" type="button" onClick={() => { clearBox(1) }}>Box 1</button>
+                  <button class="dropdown-item" type="button" onClick={() => { clearBox(2) }}>Box 2</button>
+                  <button class="dropdown-item" type="button" onClick={() => { clearBox(3) }}>Box 3</button>
+                </div>
               </div>
 
 
