@@ -22,8 +22,8 @@ function App() {
           break;
 
         case 7: //Destination Box Status response
-          alert("Box: " + info.box_id + " , holding Package type " + info.package_type);
-          alert("Packages stored: " + info.packages_stored);
+          alert("Box: " + info.box_id + " , holding Package type " + info.package_type + "\n");
+          alert("Packages stored: " + info.packages_stored + "\n");
           alert("Packages in transit: " + info.packages_in_transit);
           break;
 
@@ -39,7 +39,7 @@ function App() {
 
         case 11: //Clear Box  response
           if (info.success) {
-            alert("Box: " + info.box_id + " has been cleared");
+            alert("Box: " + info.box_id + " has been cleared\n");
             alert("Packages removed: " + info.packages_removed);
           }
 
@@ -47,6 +47,15 @@ function App() {
             alert(info.details);
           }
           break;
+
+        case 12: //Add Destination Box Response
+          if (info.success) {
+            alert("Box " + info.box_id + " successfully added, located beside " + info.conveyor_id + "\n");
+          }
+
+          else {
+            alert(info.details);
+          }
       };
     });
   }, []);
@@ -76,12 +85,15 @@ function App() {
   function addBox() {
     let conveyorID = parseInt(window.prompt('Enter Conveyor ID'));
     let boxID = parseInt(window.prompt('Enter Box ID'));
+    let boxLocation = parseInt(window.prompt('Enter Box Location (0, 1, 2, or 3)'));
 
-    if (conveyorID >= 1 && conveyorID <= 9 && boxID >= 1 && boxID <= 3) {
+
+    if (conveyorID >= 1 && conveyorID <= 9 && boxID >= 1 && boxID <= 3 && boxLocation >= 0 && boxLocation <= 3) {
       var msg = {
         id: 2,
         conveyor_id: conveyorID,
-        box_id: boxID
+        box_id: boxID,
+        box_location: boxLocation
       };
 
       if (noNulls(msg)) {
