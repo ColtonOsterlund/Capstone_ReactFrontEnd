@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { socket } from "./socket";
+import Draggable from 'react-draggable';
+
 
 function App() {
 
@@ -63,6 +65,7 @@ function App() {
 
   const [disable, setDisable] = React.useState(true);
   let package_id = 0;
+  let possible_box_ids = [10, 20, 30];
 
   function sendState() {
     var map = {};
@@ -83,12 +86,11 @@ function App() {
 
 
   function addBox() {
-    let conveyorID = parseInt(window.prompt('Enter Conveyor ID'));
-    let boxID = parseInt(window.prompt('Enter Box ID'));
+    let conveyorID = parseInt(window.prompt('Enter Conveyor ID (1-9)'));
+    let boxID = parseInt(window.prompt('Enter Box ID (10, 20, 30)'));
     let boxLocation = parseInt(window.prompt('Enter Box Location (0, 1, 2, or 3)'));
 
-
-    if (conveyorID >= 1 && conveyorID <= 9 && boxID >= 1 && boxID <= 3 && boxLocation >= 0 && boxLocation <= 3) {
+    if (conveyorID >= 1 && conveyorID <= 9 && possible_box_ids.includes(boxID) && boxLocation >= 0 && boxLocation <= 3) {
       var msg = {
         id: 2,
         conveyor_id: conveyorID,
@@ -102,7 +104,7 @@ function App() {
     }
 
     else {
-      alert("Invalid entry");
+      alert("Invalid entry, operation aborted");
       return;
     }
   }
@@ -201,85 +203,147 @@ function App() {
       <div className="card">
         <div className="card-header text-center">Warehouse View</div>
         <div className="card-body text-center">
-
           <div class="row justify-content-center">
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./dbox.jpg")} />
-              </div>
-            </div>
 
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./dbox.jpg")} />
-              </div>
-            </div>
+            <Draggable
+              grid={[9, 9]}
+              bounds={{ top: -300, left: -300, right: 300, bottom: 300 }}>
 
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./dbox.jpg")} />
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <strong className="cursor"><div>Box 10</div></strong>
+                  <img src={require("./dbox.png")} />
+                </div>
               </div>
-            </div>
+            </Draggable>
+
+
+            <Draggable
+              grid={[9, 9]}
+              bounds={{ top: -300, left: -300, right: 300, bottom: 300 }}>
+
+
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <strong className="cursor"><div>Box 20</div></strong>
+                  <img src={require("./dbox.png")} />
+                </div>
+              </div>
+            </Draggable>
+
+            <Draggable
+              grid={[9, 9]}
+              bounds={{ top: -300, left: -300, right: 300, bottom: 300 }}>
+
+
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <strong className="cursor"><div>Box 30</div></strong>
+                  <img src={require("./dbox.png")} />
+                </div>
+              </div>
+            </Draggable>
           </div>
 
           <div class="row justify-content-center">
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./conveyor.jpg")} />
-              </div>
-            </div>
+            <Draggable bounds={{ top: -0, left: -195, right: 405, bottom: 335 }}>
 
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./conveyor.jpg")} />
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <img src={require("./conveyor.png")} />
+                  <strong className="cursor"><div>7</div></strong>
+                </div>
               </div>
-            </div>
+            </Draggable>
 
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./conveyor.jpg")} />
+
+            <Draggable
+              bounds={{ top: -0, left: -300, right: 300, bottom: 335 }}>
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <img src={require("./conveyor.png")} />
+                  <strong className="cursor"><div>8</div></strong>
+                </div>
               </div>
-            </div>
+            </Draggable>
+
+
+            <Draggable bounds={{ top: -0, left: -405, right: 195, bottom: 335 }}>
+
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <img src={require("./conveyor.png")} />
+                  <strong className="cursor"><div>9</div></strong>
+                </div>
+              </div>
+            </Draggable>
+
           </div>
 
           <div class="row justify-content-center">
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./conveyor.jpg")} />
-              </div>
-            </div>
+            <Draggable bounds={{ top: -167.5, left: -195, right: 405, bottom: 167.5 }}>
 
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./conveyor.jpg")} />
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <img src={require("./conveyor.png")} />
+                  <strong className="cursor"><div>4</div></strong>
+                </div>
               </div>
-            </div>
+            </Draggable>
 
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./conveyor.jpg")} />
+
+            <Draggable bounds={{ top: -167.5, left: -105, right: 105, bottom: 167.5 }}>
+
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <img src={require("./conveyor.png")} />
+                  <strong className="cursor"><div>5</div></strong>
+                </div>
               </div>
-            </div>
+            </Draggable>
+
+
+            <Draggable bounds={{ top: -167.5, left: -405, right: 195, bottom: 167.5 }}>
+
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <img src={require("./conveyor.png")} />
+                </div>
+                <strong className="cursor"><div>6</div></strong>
+              </div>
+            </Draggable>
           </div>
 
           <div class="row justify-content-center">
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./conveyor.jpg")} />
-              </div>
-            </div>
 
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./conveyor.jpg")} />
+            <Draggable bounds={{ top: -335, left: -195, right: 405, bottom: 0 }}>
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <img src={require("./conveyor.png")} />
+                  <strong className="cursor"><div>1</div></strong>
+                </div>
               </div>
-            </div>
+            </Draggable>
 
-            <div class="col-md-3">
-              <div class="thumbnail">
-                <img src={require("./conveyor.jpg")} />
+
+            <Draggable bounds={{ top: -335, left: -300, right: 300, bottom: 0 }}>
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <img src={require("./conveyor.png")} />
+                  <strong className="cursor"><div>2</div></strong>
+                </div>
               </div>
-            </div>
+            </Draggable>
+
+
+            <Draggable bounds={{ top: -335, left: -405, right: 195, bottom: 0 }}>
+              <div class="col-md-3">
+                <div class="thumbnail">
+                  <img src={require("./conveyor.png")} />
+                  <strong className="cursor"><div>3</div></strong>
+                </div>
+              </div>
+            </Draggable>
           </div>
 
           <div class="row justify-content-center">
