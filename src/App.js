@@ -111,7 +111,7 @@ function App() {
         let east = pageMap[i][j + 1];
         let south = pageMap[i + 1][j]
         let west = pageMap[i][j - 1];
-        if (pageMap[i][j] > 1 && pageMap[i][j] <= 9 && !isNaN(pageMap[i][j])) {
+        if (pageMap[i][j] >= 1 && pageMap[i][j] <= 9 && !isNaN(pageMap[i][j])) {
           if (north == null || isNaN(north)) {
             north = -1;
           }
