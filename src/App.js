@@ -66,8 +66,12 @@ function App() {
   const [disable, setDisable] = React.useState(true);
   let package_id = 0;
   let possible_box_ids = [10, 20, 30];
+  const locationMap = new Map();
 
   function sendState() {
+    const mapSort2 = new Map([...locationMap.entries()].sort((a, b) => a[1] - b[1]));
+    console.log(mapSort2);
+
     var map = {};
     map['id'] = 1
     map['1'] = [4, 2, -1, -1];
@@ -197,6 +201,11 @@ function App() {
     setDisable(true);
   }
 
+  function getRank(conveyor, xyratio) {
+    let ratio = parseFloat(xyratio);
+    locationMap.set(conveyor, ratio);
+  }
+
   return (
     <p>
 
@@ -206,9 +215,8 @@ function App() {
           <div class="row justify-content-center">
 
             <Draggable
-              grid={[9, 9]}
-              bounds={{ top: -300, left: -300, right: 300, bottom: 300 }}>
-
+                          grid={[75, 80.5]}
+              defaultPosition={{ x: -90, y: 0 }}>
               <div class="col-md-3">
                 <div class="thumbnail">
                   <strong className="cursor"><div>Box 10</div></strong>
@@ -219,10 +227,8 @@ function App() {
 
 
             <Draggable
-              grid={[9, 9]}
+              defaultPosition={{ x: 0, y: 0 }}
               bounds={{ top: -300, left: -300, right: 300, bottom: 300 }}>
-
-
               <div class="col-md-3">
                 <div class="thumbnail">
                   <strong className="cursor"><div>Box 20</div></strong>
@@ -232,10 +238,8 @@ function App() {
             </Draggable>
 
             <Draggable
-              grid={[9, 9]}
-              bounds={{ top: -300, left: -300, right: 300, bottom: 300 }}>
-
-
+              defaultPosition={{ x: 110, y: 0 }}
+              bounds={{ top: -300, left: -800, right: 300, bottom: 300 }}>
               <div class="col-md-3">
                 <div class="thumbnail">
                   <strong className="cursor"><div>Box 30</div></strong>
@@ -246,10 +250,17 @@ function App() {
           </div>
 
           <div class="row justify-content-center">
-            <Draggable bounds={{ top: -0, left: -195, right: 405, bottom: 335 }}>
+            <Draggable defaultPosition={{ x: -195, y: 0 }}
+              grid={[150, 167.5]}
+              bounds={{ top: -0, left: -195, right: 425, bottom: 335 }}>
+              <div class="col-md-3" id="7">
+                <div class="thumbnail" onClick={() => {
+                  let elem = document.getElementById("7")
+                  let rect = elem.getBoundingClientRect();
 
-              <div class="col-md-3">
-                <div class="thumbnail">
+                  getRank(elem.id, rect.x / rect.y);
+                }}
+                >
                   <img src={require("./conveyor.png")} />
                   <strong className="cursor"><div>7</div></strong>
                 </div>
@@ -257,10 +268,17 @@ function App() {
             </Draggable>
 
 
-            <Draggable
-              bounds={{ top: -0, left: -300, right: 300, bottom: 335 }}>
-              <div class="col-md-3">
-                <div class="thumbnail">
+            <Draggable defaultPosition={{ x: 0, y: 0 }}
+              grid={[150, 167.5]}
+              bounds={{ top: -0, left: -300, right: 320, bottom: 335 }}>
+              <div class="col-md-3" id="8">
+                <div class="thumbnail" onClick={() => {
+                  let elem = document.getElementById("8")
+                  let rect = elem.getBoundingClientRect();
+
+                  getRank(elem.id, rect.x / rect.y);
+                }}
+                >
                   <img src={require("./conveyor.png")} />
                   <strong className="cursor"><div>8</div></strong>
                 </div>
@@ -268,10 +286,17 @@ function App() {
             </Draggable>
 
 
-            <Draggable bounds={{ top: -0, left: -405, right: 195, bottom: 335 }}>
+            <Draggable defaultPosition={{ x: 215, y: 0 }}
+              grid={[150, 167.5]}
+              bounds={{ top: -0, left: -405, right: 215, bottom: 335 }}>
+              <div class="col-md-3" id="9">
+                <div class="thumbnail" onClick={() => {
+                  let elem = document.getElementById("9")
+                  let rect = elem.getBoundingClientRect();
 
-              <div class="col-md-3">
-                <div class="thumbnail">
+                  getRank(elem.id, rect.x / rect.y);
+                }}
+                >
                   <img src={require("./conveyor.png")} />
                   <strong className="cursor"><div>9</div></strong>
                 </div>
@@ -281,10 +306,17 @@ function App() {
           </div>
 
           <div class="row justify-content-center">
-            <Draggable bounds={{ top: -167.5, left: -195, right: 405, bottom: 167.5 }}>
+            <Draggable defaultPosition={{ x: -195, y: 0 }}
+              grid={[150, 167.5]}
+              bounds={{ top: -167.5, left: -195, right: 425, bottom: 167.5 }}>
+              <div class="col-md-3" id="4">
+                <div class="thumbnail" onClick={() => {
+                  let elem = document.getElementById("4")
+                  let rect = elem.getBoundingClientRect();
 
-              <div class="col-md-3">
-                <div class="thumbnail">
+                  getRank(elem.id, rect.x / rect.y);
+                }}
+                >
                   <img src={require("./conveyor.png")} />
                   <strong className="cursor"><div>4</div></strong>
                 </div>
@@ -292,10 +324,17 @@ function App() {
             </Draggable>
 
 
-            <Draggable bounds={{ top: -167.5, left: -105, right: 105, bottom: 167.5 }}>
+            <Draggable defaultPosition={{ x: 0, y: 0 }}
+              grid={[150, 167.5]}
+              bounds={{ top: -167.5, left: -300, right: 320, bottom: 167.5 }}>
+              <div class="col-md-3" id="5">
+                <div class="thumbnail" onClick={() => {
+                  let elem = document.getElementById("5")
+                  let rect = elem.getBoundingClientRect();
 
-              <div class="col-md-3">
-                <div class="thumbnail">
+                  getRank(elem.id, rect.x / rect.y);
+                }}
+                >
                   <img src={require("./conveyor.png")} />
                   <strong className="cursor"><div>5</div></strong>
                 </div>
@@ -303,10 +342,17 @@ function App() {
             </Draggable>
 
 
-            <Draggable bounds={{ top: -167.5, left: -405, right: 195, bottom: 167.5 }}>
+            <Draggable defaultPosition={{ x: 215, y: 0 }}
+              grid={[150, 167.5]}
+              bounds={{ top: -167.5, left: -405, right: 215, bottom: 167.5 }}>
+              <div class="col-md-3" id="6">
+                <div class="thumbnail" onClick={() => {
+                  let elem = document.getElementById("6")
+                  let rect = elem.getBoundingClientRect();
 
-              <div class="col-md-3">
-                <div class="thumbnail">
+                  getRank(elem.id, rect.x / rect.y);
+                }}
+                >
                   <img src={require("./conveyor.png")} />
                 </div>
                 <strong className="cursor"><div>6</div></strong>
@@ -316,19 +362,34 @@ function App() {
 
           <div class="row justify-content-center">
 
-            <Draggable bounds={{ top: -335, left: -195, right: 405, bottom: 0 }}>
-              <div class="col-md-3">
-                <div class="thumbnail">
+            <Draggable defaultPosition={{ x: -195, y: 0 }}
+              bounds={{ top: 0, left: -195, right: 0, bottom: 0 }}>
+              <div class="col-md-3" id="1">
+                <div class="thumbnail" onClick={() => {
+                  let elem = document.getElementById("1")
+                  let rect = elem.getBoundingClientRect();
+
+                  getRank(elem.id, rect.x / rect.y);
+                }}
+                >
                   <img src={require("./conveyor.png")} />
-                  <strong className="cursor"><div>1</div></strong>
+                  <strong className="cursor"><div>1 (Input Conveyor)</div></strong>
                 </div>
               </div>
             </Draggable>
 
 
-            <Draggable bounds={{ top: -335, left: -300, right: 300, bottom: 0 }}>
-              <div class="col-md-3">
-                <div class="thumbnail">
+            <Draggable defaultPosition={{ x: -20, y: 0 }}
+              grid={[150, 167.5]}
+              bounds={{ top: -335, left: -320, right: 300, bottom: 0 }}>
+              <div class="col-md-3" id="2">
+                <div class="thumbnail" onClick={() => {
+                  let elem = document.getElementById("2")
+                  let rect = elem.getBoundingClientRect();
+
+                  getRank(elem.id, rect.x / rect.y);
+                }}
+                >
                   <img src={require("./conveyor.png")} />
                   <strong className="cursor"><div>2</div></strong>
                 </div>
@@ -336,9 +397,17 @@ function App() {
             </Draggable>
 
 
-            <Draggable bounds={{ top: -335, left: -405, right: 195, bottom: 0 }}>
-              <div class="col-md-3">
-                <div class="thumbnail">
+            <Draggable defaultPosition={{ x: 195, y: 0 }}
+              grid={[150, 167.5]}
+              bounds={{ top: -335, left: -105, right: 195, bottom: 0 }}>
+              <div class="col-md-3" id="3">
+                <div class="thumbnail" onClick={() => {
+                  let elem = document.getElementById("3")
+                  let rect = elem.getBoundingClientRect();
+
+                  getRank(elem.id, rect.x / rect.y);
+                }}
+                >
                   <img src={require("./conveyor.png")} />
                   <strong className="cursor"><div>3</div></strong>
                 </div>
