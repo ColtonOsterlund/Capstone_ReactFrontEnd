@@ -65,49 +65,121 @@ function App() {
 
   const [disable, setDisable] = React.useState(true);
   let package_id = 0;
-  let possible_box_ids = [10, 20, 30];
+  let pageMap = new Array(5);
+  for (var i = 0; i < pageMap.length; i++) {
+    pageMap[i] = new Array(5);
+  }
+  pageMap[3][1] = 1; //Input conveyor
+
 
   function sendState() {
-    var map = {};
-    map['id'] = 1
-    map['1'] = [4, 2, -1, -1];
-    map['2'] = [5, 3, -1, 1];
-    map['3'] = [6, -1, -1, 2];
-    map['4'] = [7, 5, 1, -1];
-    map['5'] = [8, 6, 2, 4];
-    map['6'] = [9, -1, 3, 5];
-    map['7'] = [-1, 8, 4, -1];
-    map['8'] = [-1, 9, 5, 7];
-    map['9'] = [-1, -1, 6, 8];
-
-    socket.send(JSON.stringify(map));
-
+    getNeighbours();
   }
 
+  function setNeighbours() {
+    // Conveyors
+    for (let num = 2; num <= 9; num++) {
+      var z = document.getElementById("myConveyor" + num);
+      let i = parseInt(z.name);
+      let j = parseInt(z.className);
+      pageMap[i][j] = parseInt(z.value);
 
-  function addBox() {
-    let conveyorID = parseInt(window.prompt('Enter Conveyor ID (1-9)'));
-    let boxID = parseInt(window.prompt('Enter Box ID (10, 20, 30)'));
-    let boxLocation = parseInt(window.prompt('Enter Box Location (0, 1, 2, or 3)'));
+    }
 
-    if (conveyorID >= 1 && conveyorID <= 9 && possible_box_ids.includes(boxID) && boxLocation >= 0 && boxLocation <= 3) {
-      var msg = {
-        id: 2,
-        conveyor_id: conveyorID,
-        box_id: boxID,
-        box_location: boxLocation
-      };
+    // Boxes
+    for (let num = 1; num <= 9; num++) {
+      var z = document.getElementById("myBox" + num);
+      let i = parseInt(z.name);
+      let j = parseInt(z.className);
+      let val = parseInt(z.value);
 
-      if (noNulls(msg)) {
-        socket.send(JSON.stringify(msg));
+      if (val == 10 || val == 20 || val == 30) {
+        pageMap[i][j] = parseInt(val);
       }
     }
 
-    else {
-      alert("Invalid entry, operation aborted");
-      return;
+  }
+
+  function getNeighbours() {
+    setNeighbours();
+    var map = {};
+
+    for (let i = 3; i > 0; i--) {
+      for (let j = 1; j < 4; j++) {
+        let north = pageMap[i - 1][j];
+        let east = pageMap[i][j + 1];
+        let south = pageMap[i + 1][j]
+        let west = pageMap[i][j - 1];
+
+        if (north == null) {
+          north = -1;
+        }
+
+        else if (north >= 10) {
+          addBox(north, pageMap[i][j], 0);
+          north = -1;
+        }
+
+        if (east == null) {
+          east = -1;
+        }
+
+        else if (east >= 10) {
+          addBox(east, pageMap[i][j], 1);
+          east = -1;
+        }
+
+        if (south == null) {
+          south = -1;
+        }
+
+        else if (south >= 10) {
+          addBox(south, pageMap[i][j], 2);
+          south = -1;
+        }
+
+        if (west == null) {
+          west = -1;
+        }
+
+        else if (west >= 10) {
+          addBox(west, pageMap[i][j], 3);
+          west = -1;
+        }
+
+        map[pageMap[i][j]] = [north, east, south, west];
+        // alert(pageMap[i][j] + ": " + map[pageMap[i][j]]);
+
+      }
+
+    }
+
+    // console.log(pageMap);
+
+    let msg = {
+      id: 1,
+      map: map
+    }
+
+    if (noNulls(msg)) {
+      socket.send(JSON.stringify(map));
     }
   }
+
+
+  function addBox(boxID, conveyorID, boxLocation) {
+    var msg = {
+      id: 2,
+      conveyor_id: parseInt(conveyorID),
+      box_id: parseInt(boxID),
+      box_location: parseInt(boxLocation)
+    };
+
+    if (noNulls(msg)) {
+      socket.send(JSON.stringify(msg));
+    }
+  }
+
 
 
   function addPackage(type) {
@@ -203,148 +275,284 @@ function App() {
       <div className="card">
         <div className="card-header text-center">Warehouse View</div>
         <div className="card-body text-center">
-          <div class="row justify-content-center">
-
-            <Draggable
-              grid={[9, 9]}
-              bounds={{ top: -300, left: -300, right: 300, bottom: 300 }}>
-
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <strong className="cursor"><div>Box 10</div></strong>
-                  <img src={require("./dbox.png")} />
-                </div>
-              </div>
-            </Draggable>
-
-
-            <Draggable
-              grid={[9, 9]}
-              bounds={{ top: -300, left: -300, right: 300, bottom: 300 }}>
-
-
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <strong className="cursor"><div>Box 20</div></strong>
-                  <img src={require("./dbox.png")} />
-                </div>
-              </div>
-            </Draggable>
-
-            <Draggable
-              grid={[9, 9]}
-              bounds={{ top: -300, left: -300, right: 300, bottom: 300 }}>
-
-
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <strong className="cursor"><div>Box 30</div></strong>
-                  <img src={require("./dbox.png")} />
-                </div>
-              </div>
-            </Draggable>
-          </div>
 
           <div class="row justify-content-center">
-            <Draggable bounds={{ top: -0, left: -195, right: 405, bottom: 335 }}>
-
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <img src={require("./conveyor.png")} />
-                  <strong className="cursor"><div>7</div></strong>
-                </div>
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./dbox.png")} />
               </div>
-            </Draggable>
+              <select id="myBox1" name="0" className="1">
+                <option selected>Deactivated</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </select>
 
+            </div>
 
-            <Draggable
-              bounds={{ top: -0, left: -300, right: 300, bottom: 335 }}>
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <img src={require("./conveyor.png")} />
-                  <strong className="cursor"><div>8</div></strong>
-                </div>
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./dbox.png")} />
               </div>
-            </Draggable>
+              <select id="myBox2" name="0" className="2">
+                <option selected>Deactivated</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </select>
 
+            </div>
 
-            <Draggable bounds={{ top: -0, left: -405, right: 195, bottom: 335 }}>
-
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <img src={require("./conveyor.png")} />
-                  <strong className="cursor"><div>9</div></strong>
-                </div>
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./dbox.png")} />
               </div>
-            </Draggable>
+              <select id="myBox3" name="0" className="3">
+                <option selected>Deactivated</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </select>
 
-          </div>
-
-          <div class="row justify-content-center">
-            <Draggable bounds={{ top: -167.5, left: -195, right: 405, bottom: 167.5 }}>
-
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <img src={require("./conveyor.png")} />
-                  <strong className="cursor"><div>4</div></strong>
-                </div>
-              </div>
-            </Draggable>
-
-
-            <Draggable bounds={{ top: -167.5, left: -105, right: 105, bottom: 167.5 }}>
-
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <img src={require("./conveyor.png")} />
-                  <strong className="cursor"><div>5</div></strong>
-                </div>
-              </div>
-            </Draggable>
-
-
-            <Draggable bounds={{ top: -167.5, left: -405, right: 195, bottom: 167.5 }}>
-
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <img src={require("./conveyor.png")} />
-                </div>
-                <strong className="cursor"><div>6</div></strong>
-              </div>
-            </Draggable>
+            </div>
           </div>
 
           <div class="row justify-content-center">
 
-            <Draggable bounds={{ top: -335, left: -195, right: 405, bottom: 0 }}>
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <img src={require("./conveyor.png")} />
-                  <strong className="cursor"><div>1</div></strong>
-                </div>
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./dbox.png")} />
               </div>
-            </Draggable>
+              <select id="myBox4" name="1" className="0">
+                <option selected>Deactivated</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </select>
 
 
-            <Draggable bounds={{ top: -335, left: -300, right: 300, bottom: 0 }}>
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <img src={require("./conveyor.png")} />
-                  <strong className="cursor"><div>2</div></strong>
-                </div>
+            </div>
+
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./conveyor.png")} />
               </div>
-            </Draggable>
-
-
-            <Draggable bounds={{ top: -335, left: -405, right: 195, bottom: 0 }}>
-              <div class="col-md-3">
-                <div class="thumbnail">
-                  <img src={require("./conveyor.png")} />
-                  <strong className="cursor"><div>3</div></strong>
-                </div>
+              <div>
+                <select id="myConveyor7" name="1" className="1">
+                  <option selected>No Conveyor</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6</option>
+                  <option>7</option>
+                  <option>8</option>
+                  <option>9</option>
+                </select>
               </div>
-            </Draggable>
+            </div>
+
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./conveyor.png")} />
+              </div>
+              <div>
+                <select id="myConveyor8" name="1" className="2">
+                  <option selected>No Conveyor</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6</option>
+                  <option>7</option>
+                  <option>8</option>
+                  <option>9</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./conveyor.png")} />
+              </div>
+              <div>
+                <select id="myConveyor9" name="1" className="3">
+                  <option selected>No Conveyor</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6</option>
+                  <option>7</option>
+                  <option>8</option>
+                  <option>9</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./dbox.png")} />
+              </div>
+              <select id="myBox5" name="1" className="4">
+                <option selected>Deactivated</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </select>
+
+            </div>
           </div>
+
+
+          <div class="row justify-content-center">
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./dbox.png")} />
+              </div>
+              <select id="myBox6" name="2" className="0">
+                <option selected>Deactivated</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </select>
+
+            </div>
+
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./conveyor.png")} />
+              </div>
+              <select id="myConveyor4" name="2" className="1">
+                <option selected>No Conveyor</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./conveyor.png")} />
+              </div>
+              <select id="myConveyor5" name="2" className="2">
+                <option selected>No Conveyor</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./conveyor.png")} />
+              </div>
+              <select id="myConveyor6" name="2" className="3">
+                <option selected>No Conveyor</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./dbox.png")} />
+              </div>
+              <select id="myBox7" name="2" className="4">
+                <option selected>Deactivated</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </select>
+
+            </div>
+          </div>
+
+          <div class="row justify-content-center">
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./dbox.png")} />
+              </div>
+              <select id="myBox8" name="3" className="0">
+                <option selected>Deactivated</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </select>
+
+            </div>
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./conveyor.png")} />
+              </div>
+              <button class="btn">1 (Input Conveyor)</button>
+            </div>
+
+
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./conveyor.png")} />
+              </div>
+              <select id="myConveyor2" name="3" className="2">
+                <option selected>No Conveyor</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./conveyor.png")} />
+              </div>
+              <select id="myConveyor3" name="3" className="3">
+                <option selected>No Conveyor</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <div class="thumbnail">
+                <img src={require("./dbox.png")} />
+              </div>
+              <select id="myBox9" name="3" className="4">
+                <option selected>Deactivated</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </select>
+
+            </div>
+          </div>
+
 
           <div class="row justify-content-center">
             <div class="btn-toolbar">
@@ -365,14 +573,6 @@ function App() {
                   <button class="dropdown-item" type="button" onClick={() => { addPackage(2) }}>Green</button>
                 </div>
               </div>
-
-
-              <div class="btn-group mr-4" role="group">
-                <button class="btn btn-primary" disabled={disable} onClick={addBox}>
-                  Add Box
-                </button>
-              </div>
-
 
               <div class="btn-group mr-4 dropup" role="group">
                 <button class="btn btn-primary dropdown-toggle" disabled={disable} type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box Status</button>
@@ -401,7 +601,6 @@ function App() {
                   <button class="dropdown-item" type="button" onClick={() => { clearBox(3) }}>Box 3</button>
                 </div>
               </div>
-
 
               <div class="btn-group mr-4" role="group">
                 <button class="btn btn-danger" disabled={disable} onClick={shutdownSystem}>
