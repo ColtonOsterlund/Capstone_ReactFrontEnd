@@ -65,6 +65,7 @@ function App() {
 
   const [disable, setDisable] = React.useState(true);
   let package_id = 0;
+  let boxPos = [];
   let pageMap = new Array(5);
   for (var i = 0; i < pageMap.length; i++) {
     pageMap[i] = new Array(5);
@@ -116,7 +117,7 @@ function App() {
         }
 
         else if (north >= 10) {
-          addBox(north, pageMap[i][j], 0);
+          boxPos.push(north, pageMap[i][j], 0);
           north = -1;
         }
 
@@ -125,7 +126,7 @@ function App() {
         }
 
         else if (east >= 10) {
-          addBox(east, pageMap[i][j], 1);
+          boxPos.push(east, pageMap[i][j], 1);
           east = -1;
         }
 
@@ -134,7 +135,7 @@ function App() {
         }
 
         else if (south >= 10) {
-          addBox(south, pageMap[i][j], 2);
+          boxPos.push(south, pageMap[i][j], 2);
           south = -1;
         }
 
@@ -143,7 +144,7 @@ function App() {
         }
 
         else if (west >= 10) {
-          addBox(west, pageMap[i][j], 3);
+          boxPos.push(west, pageMap[i][j], 3);
           west = -1;
         }
 
@@ -164,19 +165,23 @@ function App() {
     if (noNulls(msg)) {
       socket.send(JSON.stringify(map));
     }
+
+    addBox(boxPos);
   }
 
 
-  function addBox(boxID, conveyorID, boxLocation) {
-    var msg = {
-      id: 2,
-      conveyor_id: parseInt(conveyorID),
-      box_id: parseInt(boxID),
-      box_location: parseInt(boxLocation)
-    };
+  function addBox(boxPositions) {
+    for (let i = 0; i < boxPos.length; i += 3) {
+      var msg = {
+        id: 2,
+        conveyor_id: parseInt(boxPositions[i+1]),
+        box_id: parseInt(boxPositions[i]),
+        box_location: parseInt(boxPositions[i+2])
+      };
 
-    if (noNulls(msg)) {
-      socket.send(JSON.stringify(msg));
+      if (noNulls(msg)) {
+        socket.send(JSON.stringify(msg));
+      }
     }
   }
 
