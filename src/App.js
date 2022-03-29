@@ -111,58 +111,54 @@ function App() {
         let east = pageMap[i][j + 1];
         let south = pageMap[i + 1][j]
         let west = pageMap[i][j - 1];
+        if (pageMap[i][j] > 1 && pageMap[i][j] <= 9 && !isNaN(pageMap[i][j])) {
+          if (north == null || isNaN(north)) {
+            north = -1;
+          }
 
-        if (north == null) {
-          north = -1;
+          else if (north >= 10) {
+            boxPos.push(north, pageMap[i][j], 0);
+            north = -1;
+          }
+
+          if (east == null || isNaN(east)) {
+            east = -1;
+          }
+
+          else if (east >= 10) {
+            boxPos.push(east, pageMap[i][j], 1);
+            east = -1;
+          }
+
+          if (south == null || isNaN(south)) {
+            south = -1;
+          }
+
+          else if (south >= 10) {
+            boxPos.push(south, pageMap[i][j], 2);
+            south = -1;
+          }
+
+          if (west == null || isNaN(west)) {
+            west = -1;
+          }
+
+          else if (west >= 10) {
+            boxPos.push(west, pageMap[i][j], 3);
+            west = -1;
+          }
+
+          map[pageMap[i][j]] = [north, east, south, west];
+          // alert(pageMap[i][j] + ": " + map[pageMap[i][j]]);
         }
-
-        else if (north >= 10) {
-          boxPos.push(north, pageMap[i][j], 0);
-          north = -1;
-        }
-
-        if (east == null) {
-          east = -1;
-        }
-
-        else if (east >= 10) {
-          boxPos.push(east, pageMap[i][j], 1);
-          east = -1;
-        }
-
-        if (south == null) {
-          south = -1;
-        }
-
-        else if (south >= 10) {
-          boxPos.push(south, pageMap[i][j], 2);
-          south = -1;
-        }
-
-        if (west == null) {
-          west = -1;
-        }
-
-        else if (west >= 10) {
-          boxPos.push(west, pageMap[i][j], 3);
-          west = -1;
-        }
-
-        map[pageMap[i][j]] = [north, east, south, west];
-        // alert(pageMap[i][j] + ": " + map[pageMap[i][j]]);
-
       }
 
     }
 
     // console.log(pageMap);
+    map["id"] = 1;
 
-    let msg = {
-      id: 1,
-      map: map
-    }
-
-    if (noNulls(msg)) {
+    if (noNulls(map)) {
       socket.send(JSON.stringify(map));
     }
 
@@ -174,9 +170,9 @@ function App() {
     for (let i = 0; i < boxPos.length; i += 3) {
       var msg = {
         id: 2,
-        conveyor_id: parseInt(boxPositions[i+1]),
+        conveyor_id: parseInt(boxPositions[i + 1]),
         box_id: parseInt(boxPositions[i]),
-        box_location: parseInt(boxPositions[i+2])
+        box_location: parseInt(boxPositions[i + 2])
       };
 
       if (noNulls(msg)) {
