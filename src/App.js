@@ -578,9 +578,9 @@ function App() {
               <div class="btn-group mr-4 dropup" role="group">
                 <button class="btn btn-primary dropdown-toggle" disabled={disable} type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Box Status</button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                  <button class="dropdown-item" type="button" onClick={() => { boxStatus(1) }}>Box 1</button>
-                  <button class="dropdown-item" type="button" onClick={() => { boxStatus(2) }}>Box 2</button>
-                  <button class="dropdown-item" type="button" onClick={() => { boxStatus(3) }}>Box 3</button>
+                  <button class="dropdown-item" type="button" onClick={() => { boxStatus(10) }}>Box 10</button>
+                  <button class="dropdown-item" type="button" onClick={() => { boxStatus(20) }}>Box 20</button>
+                  <button class="dropdown-item" type="button" onClick={() => { boxStatus(30) }}>Box 30</button>
                 </div>
               </div>
 
@@ -588,18 +588,18 @@ function App() {
               <div class="btn-group mr-4 dropup" role="group">
                 <button class="btn btn-primary dropdown-toggle" disabled={disable} type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Remove Package</button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                  <button class="dropdown-item" type="button" onClick={() => { removePackage(1) }}>Box 1</button>
-                  <button class="dropdown-item" type="button" onClick={() => { removePackage(2) }}>Box 2</button>
-                  <button class="dropdown-item" type="button" onClick={() => { removePackage(3) }}>Box 3</button>
+                  <button class="dropdown-item" type="button" onClick={() => { removePackage(10) }}>Box 10</button>
+                  <button class="dropdown-item" type="button" onClick={() => { removePackage(20) }}>Box 20</button>
+                  <button class="dropdown-item" type="button" onClick={() => { removePackage(30) }}>Box 30</button>
                 </div>
               </div>
 
               <div class="btn-group mr-4 dropup" role="group">
                 <button class="btn btn-warning dropdown-toggle" disabled={disable} type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Clear Box</button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                  <button class="dropdown-item" type="button" onClick={() => { clearBox(1) }}>Box 1</button>
-                  <button class="dropdown-item" type="button" onClick={() => { clearBox(2) }}>Box 2</button>
-                  <button class="dropdown-item" type="button" onClick={() => { clearBox(3) }}>Box 3</button>
+                  <button class="dropdown-item" type="button" onClick={() => { clearBox(10) }}>Box 10</button>
+                  <button class="dropdown-item" type="button" onClick={() => { clearBox(20) }}>Box 20</button>
+                  <button class="dropdown-item" type="button" onClick={() => { clearBox(30) }}>Box 30</button>
                 </div>
               </div>
 
